@@ -16,13 +16,11 @@ prediction_step <- function(model, predictors) {
   return(as.data.frame(prediction))
 }
 
-preprocess <- function(df, backtransform = FALSE, outputs = FALSE) {
-  return(df)
-}
-
-training_step <- function(model, predictor, target, validity) {
+training_step <- function(model, predictor, target) {
   x <- as.matrix(predictor)
   y <- as.matrix(target[colnames(x)])
 
-  model %>% fit(x, y)
+  model %>% fit(x, y, epochs = 10, verbose = 1)
+
+  return(model)
 }
