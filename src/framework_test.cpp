@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> time_training(0);
   
   // Test for keras 3 wit XLA
-  if (!framework.substr(0,6).compare("keras3")) {
+  if (!framework.compare("keras3")) {
     // setup
     R.parseEval("source(\"../src/Rfiles/Rkeras3.R\")");
     R.parseEval("model <- initiate_model_xla(\"../src/barite_50ai_all.keras\")");
@@ -60,10 +60,10 @@ int main(int argc, char *argv[]) {
       end = std::chrono::high_resolution_clock::now();
       time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
-  } else if (!framework.substr(0,6).compare("keras3")) {
+  } else if (!framework.compare("keras2")) {
     // setup
-    R.parseEval("source(\"../src/Rfiles/Rkeras3.R\")");
-    R.parseEval("model <- initiate_model_xla(\"../src/barite_50ai_all.keras\")");
+    R.parseEval("source(\"../src/Rfiles/Rkeras2.R\")");
+    R.parseEval("model <- initiate_model()");
     R.parseEval("print(gpu_info())");
 
     // predict + train iterations

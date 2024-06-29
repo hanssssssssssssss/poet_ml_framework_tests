@@ -4,8 +4,8 @@ library(tensorflow)
 initiate_model_xla <- function(path) {
   Sys.setenv(TF_XLA_FLAGS = "--tf_xla_cpu_global_jit")
   print("WITH XLA")
-  print(model)
   model <- keras3::load_model(path)
+  print(model)
   return(model)
 }
 
