@@ -1,6 +1,7 @@
 #include <RInside.h>
 #include <chrono>
 #include <string>
+#include "onnxrt_test.h"
 
 using Field = std::vector<std::vector<double>>;
 
@@ -86,7 +87,9 @@ int main(int argc, char *argv[]) {
       R.parseEval("model <- training_step(model, predictors, targets)");
       end = std::chrono::high_resolution_clock::now();
       time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    }
+    } 
+  } else if (!framework.compare("keras2")) {
+    load_model("barite_50ai_all.onnx");
   }
 
   std::cout << "Inference Time:" << time_inference.count() << std::endl;
