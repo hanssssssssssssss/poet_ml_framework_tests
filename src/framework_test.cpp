@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
     } 
   } else if (!framework.compare("keras2")) {
     load_model("barite_50ai_all.onnx");
+  } else {
+    std::cout << "Invalid Framework argument" << std::endl;
   }
 
   std::cout << "Inference Time:" << time_inference.count() << std::endl;
