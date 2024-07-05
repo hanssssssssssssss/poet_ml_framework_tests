@@ -61,35 +61,6 @@ int main(int argc, char *argv[]) {
       end = std::chrono::high_resolution_clock::now();
       time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
-  } else if (!framework.compare("keras2")) {
-    // setup
-    R.parseEval("source(\"../src/Rfiles/Rkeras2.R\")");
-    R.parseEval("model <- initiate_model()");
-    R.parseEval("print(gpu_info())");
-
-    // predict + train iterations
-    for (int i = 0; i < iterations; i++) {
-      std::cout << "Iteration: " << std::to_string(i) << std::endl;
-      auto start = std::chrono::high_resolution_clock::now();
-      // Load the data back to R
-      R["TMP"] = R_tug_data[i];
-      R.parseEval("predictors <- setNames(data.frame(TMP), colnames)");
-      
-      std::cout << "Predict:" << std::endl;
-      R.parseEval("predictions <- prediction_step(model, predictors)");
-      auto end = std::chrono::high_resolution_clock::now();
-      time_inference += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-      std::cout << "Train:" << std::endl;
-      start = std::chrono::high_resolution_clock::now();
-      R["TMP"] = R_chem_data[i];
-      R.parseEval("targets <- setNames(data.frame(TMP), colnames)");
-      R.parseEval("model <- training_step(model, predictors, targets)");
-      end = std::chrono::high_resolution_clock::now();
-      time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    } 
-  } else if (!framework.compare("keras2")) {
-    load_model("barite_50ai_all.onnx");
   } else {
     std::cout << "Invalid Framework argument" << std::endl;
   }

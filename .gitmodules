@@ -1,0 +1,3 @@
+[submodule "ext/tensorflow_src"]
+	path = ext/tensorflow_src
+	url = https://github.com/tensorflow/tensorflow.git
