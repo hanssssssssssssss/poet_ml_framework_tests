@@ -1,6 +1,7 @@
 #include <RInside.h>
 #include <chrono>
 #include <string>
+#include "measure_gpu.h"
 
 using Field = std::vector<std::vector<double>>;
 
