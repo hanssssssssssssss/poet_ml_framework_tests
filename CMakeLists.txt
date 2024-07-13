@@ -20,7 +20,7 @@ find_package(RRuntime REQUIRED)
 #find_library(ONNXRUNTIME_LIB onnxruntime HINTS ${CMAKE_SOURCE_DIR}/ext/onnxruntime/lib)
 
 
-# add_executable(framework_tests src/framework_test.cpp src/onnxrt_test.h)
+add_executable(framework_tests src/framework_test.cpp)
 
 target_link_libraries(framework_tests RRuntime)
 target_link_libraries(framework_tests ${ONNXRUNTIME_LIB})

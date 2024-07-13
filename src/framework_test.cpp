@@ -1,7 +1,7 @@
 #include <RInside.h>
 #include <chrono>
 #include <string>
-#include "onnxrt_test.h"
+#include "measure_gpu.h"
 
 using Field = std::vector<std::vector<double>>;
 
