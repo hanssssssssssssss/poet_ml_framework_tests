@@ -2,4 +2,5 @@
 
 int collect_gpu_stats(int interval) {
   std::cout << interval << std::endl;
+  return 0;
 }

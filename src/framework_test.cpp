@@ -1,6 +1,7 @@
 #include <RInside.h>
 #include <chrono>
 #include <string>
+#include <thread>
 #include "measure_gpu.h"
 
 using Field = std::vector<std::vector<double>>;
@@ -33,6 +34,8 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> time_inference(0);
   std::chrono::duration<double> time_training(0);
   
+  std::thread gpu_measure_thread(collect_gpu_stats, 10);
+
   // Test for keras 3 wit XLA
   if (!framework.compare("keras3")) {
     // setup
@@ -61,10 +64,12 @@ int main(int argc, char *argv[]) {
       end = std::chrono::high_resolution_clock::now();
       time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
+  } else if (!framework.compare("test")) {
+    
   } else {
     std::cout << "Invalid Framework argument" << std::endl;
   }
-
+  gpu_measure_thread.join();
   std::cout << "Inference Time:" << time_inference.count() << std::endl;
   std::cout << "Training Time:" << time_training.count() << std::endl;
   return 0;
