@@ -1,11 +1,34 @@
 #include <chrono>
 #include <thread>
+#include <nvml.h>
 #include "global_vars.h"
 
 int collect_gpu_stats(int interval) {
+  nvmlReturn_t result;
+  nvmlDevice_t device;
+  nvmlUtilization_t utilization;
+
+  result = nvmlInit();
+  if (result != NVML_SUCCESS) {
+    std::cerr << "Failed to initialize NVML: " << nvmlErrorString(result) << std::endl;
+    return;
+  }
+
+  result = nvmlDeviceGetHandleByIndex(0, &device);
+  if (result != NVML_SUCCESS) {
+    std::cerr << "Failed to get device handle: " << nvmlErrorString(result) << std::endl;
+    nvmlShutdown();
+    return;
+  }
+
   while (run_gpu_monitoring) {
-    gpu_usage_avg += interval;
-    std::cout << gpu_usage_avg << std::endl;
+    result = nvmlDeviceGetUtilizationRates(device, &utilization);
+    if (result == NVML_SUCCESS) {
+      gpu_utilization.store(utilization.gpu);
+      std::cout << "GPU Utilization: " << utilization.gpu << "%" << std::endl;
+    } else {
+      std::cerr << "Failed to get GPU utilization: " << nvmlErrorString(result) << std::endl
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(interval));
   }
   return 0;
