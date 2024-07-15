@@ -3,10 +3,16 @@
 #include <string>
 #include <thread>
 #include "measure_gpu.h"
+#include "global_vars.h"
 
 using Field = std::vector<std::vector<double>>;
 
+std::atomic<int> gpu_usage_avg(0);
+std::atomic<bool> run_gpu_monitoring(true);
+
 int main(int argc, char *argv[]) {
+  const int interval = 100;
+
   if (argc != 3) {
     std::cout << "Wrong number of arguments!" << std::endl;
     return 1;
@@ -34,7 +40,7 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> time_inference(0);
   std::chrono::duration<double> time_training(0);
   
-  std::thread gpu_measure_thread(collect_gpu_stats, 10);
+  std::thread gpu_measure_thread(collect_gpu_stats, interval);
 
   // Test for keras 3 wit XLA
   if (!framework.compare("keras3")) {
@@ -65,10 +71,11 @@ int main(int argc, char *argv[]) {
       time_training += std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     }
   } else if (!framework.compare("test")) {
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   } else {
     std::cout << "Invalid Framework argument" << std::endl;
   }
+  run_gpu_monitoring = false;
   gpu_measure_thread.join();
   std::cout << "Inference Time:" << time_inference.count() << std::endl;
   std::cout << "Training Time:" << time_training.count() << std::endl;
