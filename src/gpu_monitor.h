@@ -3,7 +3,9 @@
 
 #include <atomic>
 
-extern std::atomic<int> gpu_usage_avg;
+extern std::atomic<float> gpu_utilization;
 extern std::atomic<bool> run_gpu_monitoring;
+
+void monitor_gpu_usage(int interval);
 
 #endif // GLOBAL_VARS_H

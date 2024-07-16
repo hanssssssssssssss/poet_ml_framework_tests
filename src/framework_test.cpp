@@ -1,17 +1,17 @@
 #include <RInside.h>
+#include <iostream>
 #include <chrono>
 #include <string>
 #include <thread>
-#include "measure_gpu.h"
-#include "global_vars.h"
+#include "gpu_monitor.h"
 
 using Field = std::vector<std::vector<double>>;
 
-std::atomic<int> gpu_usage_avg(0);
+std::atomic<float> gpu_utilization(0.0f);
 std::atomic<bool> run_gpu_monitoring(true);
 
 int main(int argc, char *argv[]) {
-  const int interval = 100;
+  const int interval = 1000;
 
   if (argc != 3) {
     std::cout << "Wrong number of arguments!" << std::endl;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   std::chrono::duration<double> time_inference(0);
   std::chrono::duration<double> time_training(0);
   
-  std::thread gpu_measure_thread(collect_gpu_stats, interval);
+  std::thread gpu_measure_thread(monitor_gpu_usage, interval);
 
   // Test for keras 3 wit XLA
   if (!framework.compare("keras3")) {
