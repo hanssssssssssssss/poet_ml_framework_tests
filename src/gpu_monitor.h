@@ -1,5 +1,5 @@
-#ifndef GLOBAL_VARS_H
-#define GLOBAL_VARS_H
+#ifndef GPU_MONITOR_H
+#define GPU_MONITOR_H
 
 #include <atomic>
 
@@ -8,4 +8,4 @@ extern std::atomic<bool> run_gpu_monitoring;
 
 void monitor_gpu_usage(int interval);
 
-#endif // GLOBAL_VARS_H
+#endif // GPU_MONITOR_H

@@ -1,5 +1,5 @@
 colnames <- c("H", "O", "Charge", "Ba", "Cl", "S(6)",
-                "Sr", "Barite", "Celestite")
+              "Sr", "Barite", "Celestite")
 
 import_data <- function(path, iteration) {
   files <- list.files(path, pattern = "iter_", full.names = TRUE)
@@ -8,9 +8,10 @@ import_data <- function(path, iteration) {
 }
 
 get_C <- function(field) {
-    return(field$C[colnames])
+  field <- field$C[colnames]
+  return(field)
 }
 
 get_T <- function(field) {
-    return(field$T[colnames])
+  return(field$T[colnames])
 }

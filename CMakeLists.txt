@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
+include(ExternalProject)
 
 project(framework_tests
   LANGUAGES CXX C
@@ -19,7 +20,8 @@ find_library(NVML_LIBRARY
              PATH_SUFFIXES stubs)
 
 
-add_executable(framework_tests src/framework_test.cpp)
+add_executable(framework_tests src/framework_test.cpp 
+                               src/framework_test_func/keras_Rinside.cpp)
 
 # Compile NVIDIA-specific parts with nvc++
 add_library(framework_tests_nvhpc OBJECT src/gpu_monitor.cpp)
@@ -28,6 +30,21 @@ set_target_properties(framework_tests_nvhpc PROPERTIES
     CMAKE_CUDA_COMPILER nvcc
 )
 
+ExternalProject_Add(
+    tensorflow
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/tensorflow_src/tensorflow/lite
+    CMAKE_ARGS 
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/tensorflow
+      -DCMAKE_BUILD_TYPE=Release
+      -DTFLITE_ENABLE_XNNPACK=ON
+      -DTFLITE_ENABLE_GPU=ON
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . --config Release
+    INSTALL_COMMAND ${CMAKE_COMMAND} --install . --prefix ${CMAKE_BINARY_DIR}/tensorflow
+)
+
+# Add include directories
+include_directories(${CMAKE_BINARY_DIR}/tensorflow/include)
+
 target_include_directories(framework_tests PRIVATE ${CUDA_INCLUDE_DIRS})
 target_include_directories(framework_tests_nvhpc PRIVATE ${CUDA_INCLUDE_DIRS})
 
@@ -35,7 +52,10 @@ target_link_libraries(framework_tests PRIVATE
                       RRuntime 
                       Threads::Threads pthread
                       $<TARGET_OBJECTS:framework_tests_nvhpc>
-                      ${NVML_LIBRARY})
+                      ${NVML_LIBRARY}
+                      ${CMAKE_BINARY_DIR}/tensorflow-prefix/src/tensorflow-build/libtensorflow-lite.a)
+
+add_dependencies(framework_tests tensorflow)
 
 
 # specify the C++ standard
