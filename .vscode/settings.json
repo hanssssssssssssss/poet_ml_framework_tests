@@ -79,5 +79,6 @@
         "scoped_allocator": "cpp",
         "typeindex": "cpp",
         "valarray": "cpp"
-    }
+    },
+    "r.lsp.promptToInstall": false
 }

@@ -25,7 +25,7 @@ void monitor_gpu_usage(int interval) {
     result = nvmlDeviceGetUtilizationRates(device, &utilization);
     if (result == NVML_SUCCESS) {
       gpu_utilization.store(utilization.gpu);
-      //std::cout << "GPU Utilization: " << utilization.gpu << "%" << std::endl;
+      std::cout << "GPU Utilization: " << utilization.gpu << "%" << std::endl;
     } else {
       std::cerr << "Failed to get GPU utilization: " << nvmlErrorString(result) << std::endl;
     }

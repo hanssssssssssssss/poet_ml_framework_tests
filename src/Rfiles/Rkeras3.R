@@ -1,9 +1,9 @@
-library(keras)
-library(tensorflow)
+require(keras3)
+require(tensorflow)
 
 initiate_model_xla <- function(path) {
   Sys.setenv(TF_XLA_FLAGS = "--tf_xla_cpu_global_jit")
-  print("WITH XLA")
+  Sys.setenv(XLA_FLAGS = "--xla_gpu_cuda_data_dir=/mnt/beegfs/apps/cuda/12.0")
   model <- keras3::load_model(path)
   print(model)
   return(model)

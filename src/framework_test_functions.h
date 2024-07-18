@@ -6,7 +6,7 @@
 
 using Field = std::vector<std::vector<double>>;
 
-void R_keras_setup(std::string path_to_model, RInside R);
-void R_keras_train(Field x, Field y, RInside R);
+void R_keras_setup(std::string path_to_model, RInside &R);
+void R_keras_train(Field &x, Field &y, RInside &R);
 
 #endif //FRAMEWORK_TEST_FUNCTIONS_H

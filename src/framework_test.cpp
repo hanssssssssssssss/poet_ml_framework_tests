@@ -56,17 +56,20 @@ int main(int argc, char *argv[]) {
 
   std::string framework = argv[2];
   std::chrono::duration<double> time_training(0);
+  std::chrono::duration<double> time_setup(0);
   
   std::thread gpu_measure_thread(monitor_gpu_usage, gpu_measure_interval);
 
   // Test for keras 3 wit XLA
   if (!framework.compare("keras3")) {
     auto start = std::chrono::high_resolution_clock::now();
-    
     R_keras_setup(keras_model, R);
-    R_keras_train(R_tug_data, R_chem_data, R);
-    
     auto end = std::chrono::high_resolution_clock::now();
+    time_setup = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    start = std::chrono::high_resolution_clock::now();
+    R_keras_train(R_tug_data, R_chem_data, R);
+    end = std::chrono::high_resolution_clock::now();
     time_training = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   } else if (!framework.compare("test")) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
