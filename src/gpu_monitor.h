@@ -6,6 +6,6 @@
 extern std::atomic<float> gpu_utilization;
 extern std::atomic<bool> run_gpu_monitoring;
 
-void monitor_gpu_usage(int interval);
+void monitor_gpu_usage(int interval, std::string output_file);
 
 #endif // GPU_MONITOR_H
