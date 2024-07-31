@@ -1,0 +1,18 @@
+conda activate poet
+export CXX=/mnt/beegfs/home/straile/.conda/envs/poet/bin/x86_64-conda-linux-gnu-c++
+export CC=/mnt/beegfs/home/straile/.conda/envs/poet/bin/gcc
+alias g++='/mnt/beegfs/home/straile/.conda/envs/poet/bin/x86_64-conda-linux-gnu-c++'
+
+
+## Other hints: (https://tensorflow.rstudio.com/install/)
+Install dev R tensorflow "remotes::install_github("rstudio/tensorflow")"
+install_tensorflow(version = "nightly") 
+
+## In R setup code:
+Sys.setenv(TF_XLA_FLAGS = "--tf_xla_cpu_global_jit")
+Sys.setenv(XLA_FLAGS = "--xla_gpu_cuda_data_dir=/mnt/beegfs/apps/cuda/12.0")
+
+## For EMA NVML copy the existing libnvidia-ml and create the Symbolic Link.
+cp mnt/beegfs/apps/cuda/12.0/targets/x86_64-linux/lib/stubs/libnvidia-ml.so ~/lib_nvml/
+ln -s ~/lib_nvml/libnvidia-ml.so ~/lib_nvml/libnvidia-ml.so.1
+export LD_LIBRARY_PATH=~/lib_nvml:$LD_LIBRARY_PATH
