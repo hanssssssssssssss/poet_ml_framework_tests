@@ -1,13 +1,16 @@
 #include <chrono>
 #include <iostream>
+#include <vector>
 #include <thread>
+#include <fstream>
 #include <nvml.h>
 #include "gpu_monitor.h"
 
-void monitor_gpu_usage(int interval) {
+void monitor_gpu_usage(int interval, std::string pid) {
   nvmlReturn_t result;
   nvmlDevice_t device;
   nvmlUtilization_t utilization;
+  std::vector<int> gpu_utilization_history;
 
   result = nvmlInit();
   if (result != NVML_SUCCESS) {
@@ -25,10 +28,26 @@ void monitor_gpu_usage(int interval) {
     result = nvmlDeviceGetUtilizationRates(device, &utilization);
     if (result == NVML_SUCCESS) {
       gpu_utilization.store(utilization.gpu);
-      std::cout << "GPU Utilization: " << utilization.gpu << "%" << std::endl;
+      gpu_utilization_history.push_back(utilization.gpu);
     } else {
       std::cerr << "Failed to get GPU utilization: " << nvmlErrorString(result) << std::endl;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+  }
+
+  // Write the collected GPU utilization history to csv
+  std::ofstream output_file("output.GPU_usage." + pid);
+  if (output_file.is_open()) {
+    for (size_t i = 0; i < gpu_utilization_history.size(); ++i) {
+      output_file << gpu_utilization_history[i];
+      if (i != gpu_utilization_history.size() - 1) {
+        output_file << ",";
+      } else {
+        output_file << std::endl;
+      }
+    }
+    output_file.close();
+  } else {
+    std::cout << "Unable to write GPU usage to output file" << std::endl;
   }
 }

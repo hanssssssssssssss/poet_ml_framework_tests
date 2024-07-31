@@ -8,10 +8,14 @@ import_data <- function(path, iteration) {
 }
 
 get_C <- function(field) {
-  field <- field$C[colnames]
+  field <- preprocess(field$C[colnames])
   return(field)
 }
 
 get_T <- function(field) {
-  return(field$T[colnames])
+  return(preprocess(field$T[colnames]))
+}
+
+get_random_indices <- function(length, percentage) {
+  return(sample(seq_len(length), percentage))
 }

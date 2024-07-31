@@ -8,7 +8,7 @@ void R_keras_setup(std::string path_to_model, RInside &R) {
   R.parseEval("print(gpu_info())");
 }
 
-void R_keras_train(Field &x, Field &y, RInside &R) {
+void R_keras_train(Field &x, Field &y, Field &val_x, Field &val_y, RInside &R) {
   //train
   R["x"] = x;
   R.parseEval("predictors <- setNames(data.frame(x), colnames)");
