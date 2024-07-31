@@ -51,6 +51,8 @@ target_include_directories(framework_tests_nvhpc PRIVATE ${CUDA_INCLUDE_DIRS})
 target_include_directories(framework_tests PRIVATE 
                            ${EMA_INSTALL_DIR}/include
                            ${CUDA_INCLUDE_DIRS}
+                           ${TensorFlowLite_INCLUDE_DIRS}
+                           ${CMAKE_CURRENT_SOURCE_DIR}/ext/tensorflow_src/tensorflow/lite
                            ${CMAKE_BINARY_DIR}/tensorflow/include)
 
 target_link_libraries(framework_tests PRIVATE

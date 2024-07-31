@@ -10,6 +10,12 @@ extern "C" {
   #include <EMA.h>
 }
 
+// TODO: Use validation data after training
+// TODO: Generate Training Data from POET
+// TODO: Implement large model
+// TODO: Implement tflite
+// TODO: Implement tflite quantization
+
 using Field = std::vector<std::vector<double>>;
 
 std::atomic<float> gpu_utilization(0.0f);
@@ -19,7 +25,7 @@ std::string keras_model_path;
 int main(int argc, char *argv[]) {
   if (argc != 4) {
     std::cout << "Wrong number of arguments!" << std::endl;
-    std::cout << "Arguments must be iterations framework model_size" << std::endl;
+    std::cout << "Arguments must be: iterations framework model_size" << std::endl;
     return 1;
   }
 
@@ -89,7 +95,6 @@ int main(int argc, char *argv[]) {
   R.parseEval("y_train <- temp_field_C[-validation_indices,]");
   R.parseEval("x_val <- temp_field_T[validation_indices,]");
   R.parseEval("y_val <- temp_field_C[validation_indices,]");
-
 
   Field x = R["x_train"];
   Field y = R["y_train"];
