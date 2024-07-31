@@ -9,5 +9,4 @@ void tflite_setup(std::string path_to_model) {
 
 void tflite_train(Field &x, Field &y) {
   //train
-  std::cout << "HALOOOOO 2" << std::endl;
 } 

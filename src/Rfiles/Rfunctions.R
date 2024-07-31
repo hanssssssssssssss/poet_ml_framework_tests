@@ -1,5 +1,3 @@
-source("Rfunctions_POET.R")
-
 colnames <- c("H", "O", "Charge", "Ba", "Cl", "S(6)",
               "Sr", "Barite", "Celestite")
 
@@ -16,4 +14,8 @@ get_C <- function(field) {
 
 get_T <- function(field) {
   return(preprocess(field$T[colnames]))
+}
+
+get_random_indices <- function(length, percentage) {
+  return(sample(seq_len(length), percentage))
 }

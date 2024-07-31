@@ -6,6 +6,27 @@ scale_min_max <- function(x, min, max, backtransform) {
   }
 }
 
+## Apply decimal logarithms handling negative values
+Safelog <- function (vec) {
+    rv <- range(vec)
+    if (max(abs(rv)) < 1) {
+        ret <- vec
+        ret[vec == 0] <- 0
+        ret[vec > 0] <- log10(vec[vec > 0])
+        ret[vec < 0] <- -log10(-vec[vec < 0])
+    } else {
+        ret <- log10(abs(vec))
+    }
+    ret
+}
+Safeexp <- function (vec) {
+    ret <- vec
+    ret[vec == 0] <- 0
+    ret[vec > 0] <- -10^(-vec[vec > 0])
+    ret[vec < 0] <- 10^(vec[vec < 0])
+    ret
+}
+
 ##' @title Apply transformations to cols of a data.frame
 ##' @param df named data.frame
 ##' @param tlist list of function names

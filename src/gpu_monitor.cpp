@@ -39,7 +39,12 @@ void monitor_gpu_usage(int interval, std::string pid) {
   std::ofstream output_file("output.GPU_usage." + pid);
   if (output_file.is_open()) {
     for (size_t i = 0; i < gpu_utilization_history.size(); ++i) {
-      output_file << gpu_utilization_history[i] << ",";
+      output_file << gpu_utilization_history[i];
+      if (i != gpu_utilization_history.size() - 1) {
+        output_file << ",";
+      } else {
+        output_file << std::endl;
+      }
     }
     output_file.close();
   } else {
