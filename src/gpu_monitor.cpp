@@ -6,7 +6,7 @@
 #include <nvml.h>
 #include "gpu_monitor.h"
 
-void monitor_gpu_usage(int interval, std::string output_folder) {
+void monitor_gpu_usage(int interval, std::string pid) {
   nvmlReturn_t result;
   nvmlDevice_t device;
   nvmlUtilization_t utilization;
@@ -36,14 +36,13 @@ void monitor_gpu_usage(int interval, std::string output_folder) {
   }
 
   // Write the collected GPU utilization history to csv
-  std::ofstream output_file(output_folder + "/gpu_usage.csv");
+  std::ofstream output_file("output.GPU_usage." + pid);
   if (output_file.is_open()) {
     for (size_t i = 0; i < gpu_utilization_history.size(); ++i) {
       output_file << gpu_utilization_history[i] << ",";
     }
     output_file.close();
-    std::cout << "GPU measurements written to " << output_folder << std::endl;
   } else {
-    std::cout << "Unable to open " << output_folder << std::endl;
+    std::cout << "Unable to write GPU usage to output file" << std::endl;
   }
 }

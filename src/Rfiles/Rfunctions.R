@@ -1,3 +1,5 @@
+source("Rfunctions_POET.R")
+
 colnames <- c("H", "O", "Charge", "Ba", "Cl", "S(6)",
               "Sr", "Barite", "Celestite")
 
@@ -8,10 +10,10 @@ import_data <- function(path, iteration) {
 }
 
 get_C <- function(field) {
-  field <- field$C[colnames]
+  field <- preprocess(field$C[colnames])
   return(field)
 }
 
 get_T <- function(field) {
-  return(field$T[colnames])
+  return(preprocess(field$T[colnames]))
 }

@@ -1,8 +1,8 @@
 #include <RInside.h>
 #include <iostream>
-#include <chrono>
 #include <string>
 #include <thread>
+#include <unistd.h>
 #include "gpu_monitor.h"
 #include "framework_test_functions.h"
 extern "C" {
@@ -15,24 +15,33 @@ std::atomic<float> gpu_utilization(0.0f);
 std::atomic<bool> run_gpu_monitoring(true);
 
 int main(int argc, char *argv[]) {
+  if (argc != 3) {
+    std::cout << "Wrong number of arguments!" << std::endl;
+    return 1;
+  }
+
+  // Constants
+  const int gpu_measure_interval = 1000;
+  const std::string keras_model_path = "../src/barite_50ai_all.keras";
+  const pid_t pid = getpid();
+  
+  const int iterations = std::stoi(argv[1]);
+  const std::string framework = argv[2];
+
+  std::cout << "Process ID: " << getpid() << std::endl;
+  std::cout << "Uses Framework: " << framework << std::endl; 
+
   // Initialize EMA
   int ema_err = EMA_init(NULL);
   if(ema_err) {
     std::cout << "EMA initalization failed" << std::endl;
     return 1;
   }
+
   EMA_REGION_DECLARE(setup);
   EMA_REGION_DECLARE(training);
   EMA_REGION_DEFINE(&setup, "setup");
   EMA_REGION_DEFINE(&training, "training");
-
-  const int gpu_measure_interval = 1000;
-  std::string keras_model_path = "../src/barite_50ai_all.keras";
-
-  if (argc != 4) {
-    std::cout << "Wrong number of arguments!" << std::endl;
-    return 1;
-  }
 
   RInside R(argc, argv);
 
@@ -40,10 +49,6 @@ int main(int argc, char *argv[]) {
   R.parseEval("source(\"../src/Rfiles/Rfunctions.R\")");
 
   // Load RDS files
-  int iterations = std::stoi(argv[1]);
-  std::string framework = argv[2];
-  std::string output_folder = argv[3];
-
   Field R_chem_data;
   Field R_tug_data;
   for (int i = 0; i < iterations; i++) {
@@ -71,32 +76,21 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  std::chrono::duration<double> time_training(0);
-  std::chrono::duration<double> time_setup(0);
-  
-  std::thread gpu_measure_thread(monitor_gpu_usage, gpu_measure_interval, output_folder);
+  std::thread gpu_measure_thread(monitor_gpu_usage, gpu_measure_interval, std::to_string(pid));
 
   // Initialize the framework
   EMA_REGION_BEGIN(setup);
-  auto start = std::chrono::high_resolution_clock::now();
   framework_setup(framework, keras_model_path, R);
-  auto end = std::chrono::high_resolution_clock::now();
-  time_setup = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   EMA_REGION_END(setup);
 
   // Train the model
   EMA_REGION_BEGIN(training);
-  start = std::chrono::high_resolution_clock::now();
   framework_train(framework, R_tug_data, R_chem_data, R);
-  end = std::chrono::high_resolution_clock::now();
-  time_training = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   EMA_REGION_END(training);
   
   // Get results
   run_gpu_monitoring = false;
   gpu_measure_thread.join();
-  std::cout << "Setup Time:" << time_setup.count() << std::endl;
-  std::cout << "Training Time:" << time_training.count() << std::endl;
   EMA_finalize();
   return 0;
 } 

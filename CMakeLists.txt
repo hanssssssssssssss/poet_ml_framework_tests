@@ -43,7 +43,7 @@ ExternalProject_Add(
   INSTALL_COMMAND ${CMAKE_COMMAND} --install . --prefix ${CMAKE_BINARY_DIR}/tensorflow)
 
 # include prebuilt EMA
-set(EMA_INSTALL_DIR "/mnt/beegfs/home/straile/ema/ema_install")
+set(EMA_INSTALL_DIR "/mnt/beegfs/home/straile/ema/ema_install") # TODO: use EMA as submoduel
 set(EMA_LIB_FILE "${EMA_INSTALL_DIR}/lib/libEMA.so")
 
 # Add include directories
