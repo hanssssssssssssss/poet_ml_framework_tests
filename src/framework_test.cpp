@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   R.parseEval("source(\"../src/Rfiles/Rfunctions.R\")");
 
   // Load RDS files
-  int iterations = std::stoi(argv[1]);
+  int iterations = std::stoi(argv[1]);  
   std::vector<Field> R_chem_data(iterations);
   std::vector<Field> R_tug_data(iterations);
   for (int i = 0; i < iterations; i++) {
