@@ -75,13 +75,24 @@ list(APPEND R_INCLUDE_DIRS ${R_RInside_INCLUDE_DIR})
 mark_as_advanced(R_RInside_LIBRARY R_RInside_INCLUDE_DIR)
 
 # putting all together into interface library
-
 add_library(RRuntime INTERFACE IMPORTED)
 set_target_properties(
   RRuntime PROPERTIES
-  INTERFACE_LINK_LIBRARIES "${R_LIBRARIES}"
-  INTERFACE_INCLUDE_DIRECTORIES "${R_INCLUDE_DIRS}"
+  INTERFACE_LINK_LIBRARIES "${R_LIBRARY};${R_RInside_LIBRARY}"
+  INTERFACE_INCLUDE_DIRECTORIES "${R_INCLUDE_DIR};${R_Rcpp_INCLUDE_DIR};${R_RInside_INCLUDE_DIR}"
 )
 
-unset(R_LIBRARIES)
-unset(R_INCLUDE_DIRS)
+# Set the RRuntime_FOUND variable
+set(RRuntime_FOUND TRUE)
+
+# Set the RRuntime_LIBRARIES and RRuntime_INCLUDE_DIRS variables
+set(RRuntime_LIBRARIES ${R_LIBRARY} ${R_RInside_LIBRARY})
+set(RRuntime_INCLUDE_DIRS ${R_INCLUDE_DIR} ${R_Rcpp_INCLUDE_DIR} ${R_RInside_INCLUDE_DIR})
+
+# Provide standardized find_package variables
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(RRuntime
+  REQUIRED_VARS R_LIBRARY R_RInside_LIBRARY R_INCLUDE_DIR R_Rcpp_INCLUDE_DIR R_RInside_INCLUDE_DIR
+)
+
+mark_as_advanced(RRuntime_FOUND RRuntime_LIBRARIES RRuntime_INCLUDE_DIRS)

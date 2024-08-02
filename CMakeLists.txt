@@ -5,6 +5,10 @@ project(framework_tests
   LANGUAGES CXX C
   DESCRIPTION "Test different ML Frameworks with POET Data")
 
+# Set RPATH
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_executable(framework_tests 
                 src/framework_test.cpp 
                 src/framework_test_func/keras_Rinside.cpp
@@ -18,7 +22,7 @@ find_package(Threads REQUIRED)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/src/config.h
+    ${CMAKE_BINARY_DIR}/config.h
 )
 
 if(USE_GPU)
@@ -62,7 +66,8 @@ set(TENSORFLOW_LIB_FILE "${TENSORFLOW_INSTALL_DIR}/libtensorflow-lite.a")
 target_include_directories(framework_tests PRIVATE 
                            ${EMA_INSTALL_DIR}/include
                            ${TENSORFLOW_INSTALL_DIR}/include
-                           ${CUDA_INCLUDE_DIRS})
+                           ${CUDA_INCLUDE_DIRS}
+                           ${CMAKE_BINARY_DIR})
 
 target_link_libraries(framework_tests PRIVATE
                       RRuntime 
@@ -79,4 +84,8 @@ link_directories(${EMA_INSTALL_DIR}/lib)
 set_target_properties(framework_tests PROPERTIES
                       CMAKE_CXX_STANDARD 20
                       CMAKE_CXX_STANDARD_REQUIRED True
-                      LINK_FLAGS "-Wl,-rpath,${EMA_INSTALL_DIR}/lib")          
+                      LINK_FLAGS "-Wl,-rpath,${EMA_INSTALL_DIR}/lib")
+
+install(TARGETS framework_tests DESTINATION bin)
+install(FILES ${EMA_LIB_FILE} DESTINATION lib)
+install(FILES ${RRuntime_LIBRARIES} DESTINATION lib)

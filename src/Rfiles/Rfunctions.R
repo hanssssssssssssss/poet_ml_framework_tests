@@ -17,5 +17,6 @@ get_T <- function(field) {
 }
 
 get_random_indices <- function(length, percentage) {
+  set.seed(42) # all test runs train and validate on the same data 
   return(sample(length, size = length * percentage))
 }

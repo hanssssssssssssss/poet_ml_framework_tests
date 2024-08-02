@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <atomic>
+#include "config.h"
 #include "framework_test_functions.h"
 #if USE_GPU
   #include "gpu_monitor.h"
@@ -25,19 +26,23 @@ std::atomic<float> gpu_utilization(0.0f);
 std::atomic<bool> run_gpu_monitoring(true);
 
 int main(int argc, char *argv[]) {
-  if (argc != 4) {
+  if (argc != 5) {
     std::cout << "Wrong number of arguments!" << std::endl;
-    std::cout << "Arguments must be: framework model_size batch_size" << std::endl;
+    std::cout << "Arguments must be: framework task model_size batch_size" << std::endl;
     return 1;
   }
 
   // Constants
   const int gpu_measure_interval = 1000;
-  //const int iterations = 10; limits the amount of training data for testing, currently not used 
-  const std::string framework = argv[1];
-  const std::string model = argv[2];
-  const int batch_size = std::stoi(argv[3]);
   const float validation_data_percentage = .05;
+  const std::string rfile_path = RFILES_DIR;
+  const std::string rdata_path = RDATA_DIR;
+
+
+  const std::string framework = argv[1];
+  const std::string task = argv[2];
+  const std::string model = argv[3];
+  const int batch_size = std::stoi(argv[4]);
 
   const pid_t pid = getpid();
 
@@ -53,7 +58,7 @@ int main(int argc, char *argv[]) {
 
   EMA_REGION_DECLARE(load_data);
   EMA_REGION_DECLARE(setup);
-  EMA_REGION_DECLARE(training);
+  EMA_REGION_DECLARE(process_data);
   //Filter *nvml_filter = EMA_filter_exclude_plugin("NVML");
   //EMA_REGION_DEFINE_WITH_FILTER(&load_data, "load_data", nvml_filter);
   //EMA_REGION_DEFINE_WITH_FILTER(&setup, "setup", nvml_filter);
@@ -61,44 +66,37 @@ int main(int argc, char *argv[]) {
 
   EMA_REGION_DEFINE(&load_data, "load_data");
   EMA_REGION_DEFINE(&setup, "setup");
-  EMA_REGION_DEFINE(&training, "training");
+  EMA_REGION_DEFINE(&process_data, "process_data");
 
   RInside R(argc, argv);
 
   // Load R util functions
-  R.parseEval("source(\"../src/Rfiles/Rfunctions.R\")");
-  R.parseEval("source(\"../src/Rfiles/Rfunctions_POET.R\")");
+  R.parseEval("source(\"" + rfile_path + "/Rfunctions.R\")");
+  R.parseEval("source(\"" + rfile_path + "/Rfunctions_POET.R\")");
 
   // Load POET data
   EMA_REGION_BEGIN(load_data);
-  // Load full dataset (currently not in use)
-  /*for (int i = 0; i < iterations; i++) {
-    R.parseEval("R_temp_data <- import_data(\"../RData/full/\"," + std::to_string(i + 1) + ")");
-    if (i == 0) {
-      std::cout << i;
-      // Initialize field
-      R.parseEval("temp_field_C <- preprocess(get_C(R_temp_data))");
-      R.parseEval("temp_field_T <- preprocess(get_T(R_temp_data))");
-      std::cout << i;
-    } else {
-      //std::cout << i;
-      R.parseEval("temp_field_C <- rbind(temp_field_C, preprocess(get_C(R_temp_data)))");
-      R.parseEval("temp_field_T <- rbind(temp_field_T, preprocess(get_T(R_temp_data)))");
-    }
-  }*/
-  // Load compressed data for select iterations
   R.parseEval("require(qs)");
-  R.parseEval("qs_data <- qs::qread(\"../RData/Barite_50_Data.qs\")");
+  R.parseEval("qs_data <- qs::qread(\"" + rdata_path + "/Barite_50_Data.qs\")");
   R.parseEval("temp_field_T <- preprocess(qs_data$design)");
-  R.parseEval("temp_field_C <- preprocess(qs_data$result)");
-
-  // split into training and validation data
-  R["validation_data_percentage"] = validation_data_percentage;
-  R.parseEval("validation_indices <- get_random_indices(nrow(temp_field_C), validation_data_percentage)");
-  R.parseEval("x_train <- temp_field_T[-validation_indices,]");
-  R.parseEval("y_train <- temp_field_C[-validation_indices,]");
-  R.parseEval("x_val <- temp_field_T[validation_indices,]");
-  R.parseEval("y_val <- temp_field_C[validation_indices,]");
+  
+  if (!task.compare("train")) {
+    // split into training and validation data
+    R.parseEval("temp_field_C <- preprocess(qs_data$result)");
+    R["validation_data_percentage"] = validation_data_percentage;
+    R.parseEval("validation_indices <- get_random_indices(nrow(temp_field_C), validation_data_percentage)");
+    R.parseEval("x_train <- temp_field_T[-validation_indices,]");
+    R.parseEval("y_train <- temp_field_C[-validation_indices,]");
+    R.parseEval("x_val <- temp_field_T[validation_indices,]");
+    R.parseEval("y_val <- temp_field_C[validation_indices,]");
+  } else if (!task.compare("predict")) {
+    // use all available data to predict
+    R.parseEval("x_train <- temp_field_T");
+  } else {
+    std::cout << "Arguments must be: framework task model_size batch_size" << std::endl;
+    std::cout << task << " is an invalid task. Choose between [train/predict]" << std::endl;
+    return -1;
+  }
 
   Field x = R["x_train"];
   Field y = R["y_train"];
@@ -116,10 +114,14 @@ int main(int argc, char *argv[]) {
   EMA_REGION_END(setup);
 
   // Train the model
-  EMA_REGION_BEGIN(training);
-  framework_train(framework, x, y, x_val, y_val, batch_size, R, std::to_string(pid));
-  EMA_REGION_END(training);
-  
+  EMA_REGION_BEGIN(process_data);
+  if (!task.compare("train")) {
+    framework_train(framework, x, y, x_val, y_val, batch_size, R, std::to_string(pid));
+  } else if (!task.compare("predict")) {
+    framework_predict(framework, x, batch_size, R);
+  }
+  EMA_REGION_END(process_data);
+    
   // Finalize and get results
   run_gpu_monitoring = false;
   #if USE_GPU

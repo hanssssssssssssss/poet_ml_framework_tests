@@ -136,25 +136,23 @@ initiate_model <- function(hidden_layers, loss) {
   activation <- "relu"
   input_length <- 9 ## Hardcoded for barite benchmark
   output_length <- 9 ## Hardcoded for barite benchmark
-  ## Creates a new sequential model from scratch
-  model <- keras_model_sequential()
 
-  ## Input layer defined by input data shape
-  model %>% layer_dense(units = input_length,
-                        activation = activation,
-                        input_shape = input_length,
-                        dtype = "float32")
+  # Input layer
+  inputs <- layer_input(shape = input_length, dtype = "float32")
+  layers <- inputs
 
+  # Hidden layers
   for (layer_size in hidden_layers) {
-    model %>% layer_dense(units = layer_size,
-                          activation = activation,
-                          dtype = "float32")
+    layers <- layers %>% 
+      layer_dense(units = layer_size, activation = activation)
   }
 
-  ## Output data defined by output data shape
-  model %>% layer_dense(units = output_length,
-                        activation = activation,
-                        dtype = "float32")
+  # Output layer
+  outputs <- layers %>% 
+    layer_dense(units = output_length, activation = activation)
+
+  # Create the model
+  model <- keras_model(inputs = inputs, outputs = outputs)
 
   model %>% compile(loss = loss,
                     optimizer = "adam")

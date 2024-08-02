@@ -3,4 +3,7 @@
 
 #cmakedefine01 USE_GPU
 
+#define RFILES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Rfiles"
+#define RDATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/RData"
+
 #endif // CONFIG_H
