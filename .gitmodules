@@ -1,6 +1,0 @@
-[submodule "ext/tensorflow_src"]
-	path = ext/tensorflow_src
-	url = https://github.com/tensorflow/tensorflow.git
-[submodule "ext/EMA"]
-	path = ext/EMA
-	url = git@git.gfz-potsdam.de:naaice/ema.git

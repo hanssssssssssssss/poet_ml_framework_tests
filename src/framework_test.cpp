@@ -84,7 +84,8 @@ int main(int argc, char *argv[]) {
     // split into training and validation data
     R.parseEval("temp_field_C <- preprocess(qs_data$result)");
     R["validation_data_percentage"] = validation_data_percentage;
-    R.parseEval("validation_indices <- get_random_indices(nrow(temp_field_C), validation_data_percentage)");
+    //R.parseEval("validation_indices <- get_random_indices(nrow(temp_field_C), validation_data_percentage)");
+    R.parseEval("validation_indices <- get_indices_from_file(\"" + rdata_path + "/indices.rds\")");
     R.parseEval("x_train <- temp_field_T[-validation_indices,]");
     R.parseEval("y_train <- temp_field_C[-validation_indices,]");
     R.parseEval("x_val <- temp_field_T[validation_indices,]");
@@ -97,7 +98,6 @@ int main(int argc, char *argv[]) {
     std::cout << task << " is an invalid task. Choose between [train/predict]" << std::endl;
     return -1;
   }
-
   Field x = R["x_train"];
   Field y = R["y_train"];
   Field x_val = R["x_val"];

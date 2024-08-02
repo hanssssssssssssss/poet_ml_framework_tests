@@ -17,6 +17,13 @@ get_T <- function(field) {
 }
 
 get_random_indices <- function(length, percentage) {
-  set.seed(42) # all test runs train and validate on the same data 
-  return(sample(length, size = length * percentage))
+  #set.seed(42)   # Setting the random seed breaks keras!
+  indices <- sample(length, size = length * percentage)
+  #set.seed(NULL)
+  return(indices)
+}
+
+get_indices_from_file <- function(path) {
+  # To make training repeatable load predetermined indices
+  return(readRDS(path))
 }
