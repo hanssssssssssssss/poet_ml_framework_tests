@@ -27,3 +27,10 @@ get_indices_from_file <- function(path) {
   # To make training repeatable load predetermined indices
   return(readRDS(path))
 }
+
+save_training_history <- function(history, pid) {
+  val_loss <- history$metrics$val_loss
+  write.table(t(val_loss), sep = ",",
+              file = paste0("output.training_history.", pid, ".csv"),
+              row.names = FALSE, col.names = FALSE)
+}

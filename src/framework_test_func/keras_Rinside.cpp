@@ -25,7 +25,7 @@ void R_keras_train(Field &x, Field &y, Field &x_val, Field &y_val, int batch_siz
 
   R.parseEval("history <- training_step(model, x, y, x_val, y_val, batch_size)");
   R.parseEval("keras3::save_model(model, filepath = \"output.model." + pid + ".keras\")");
-  R.parseEval("saveRDS(history, file = \"output.training_history." + pid + ".rds\")");
+  R.parseEval("save_training_history(history, " + pid + ")");
 }
 
 void R_keras_predict(Field &x, int batch_size, RInside &R) {
