@@ -27,10 +27,12 @@ void monitor_gpu_usage(int interval, std::string pid) {
   while (run_gpu_monitoring) {
     result = nvmlDeviceGetUtilizationRates(device, &utilization);
     if (result == NVML_SUCCESS) {
+      // store gpu utilization as integer percentage
       gpu_utilization.store(utilization.gpu);
       gpu_utilization_history.push_back(utilization.gpu);
     } else {
       std::cerr << "Failed to get GPU utilization: " << nvmlErrorString(result) << std::endl;
+      return;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(interval));
   }

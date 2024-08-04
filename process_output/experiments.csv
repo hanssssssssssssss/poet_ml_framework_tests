@@ -1,8 +1,9 @@
-framework,task,model,batch_size,PID, device
-keras3,train,small,2560,24899, GPU
-keras3,train,large,2560,12904, GPU
-keras3,predict,output.model.24899.keras,128,975, GPU
-keras3,predict,output.model.12904.keras,128,1222, GPU
-keras3,train,small,2560,13881, CPU
-keras3,predict,output.model.13881.keras,128,7926, CPU
-keras3,predict,output.model.12904.keras,128,7793, CPU
+framework,task,model,batch_size,PID,device
+keras3,train,small,2560,20263,GPU
+keras3,train,large,2560,8236,GPU
+keras3,predict,output.model.20263.keras,128,28683,GPU
+keras3,predict,output.model.8236.keras,128,28888,GPU
+keras3,train,small,2560,8846,CPU
+#keras3,train,large,2560,29411,CPU
+keras3,predict,output.model.8846.keras,128,28966,CPU
+keras3,predict,output.model.29411.keras,128,6720,CPU

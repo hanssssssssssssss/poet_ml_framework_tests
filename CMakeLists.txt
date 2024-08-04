@@ -26,6 +26,7 @@ configure_file(
 )
 
 if(USE_GPU)
+  message("Configurine NVML to access GPU")
   find_package(CUDA REQUIRED)
   find_library(NVML_LIBRARY  
               NAMES nvidia-ml libnvidia-ml

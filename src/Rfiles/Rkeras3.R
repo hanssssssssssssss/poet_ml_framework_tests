@@ -1,6 +1,10 @@
 require(keras3)
 require(tensorflow)
 
+set.seed(42)
+tf$random$set_seed(42)
+reticulate::py_set_seed(42)
+
 initiate_model_xla <- function(model) {
   Sys.setenv(TF_XLA_FLAGS = "--tf_xla_cpu_global_jit")
   Sys.setenv(XLA_FLAGS = "--xla_gpu_cuda_data_dir=/mnt/beegfs/apps/cuda/12.0")
@@ -30,7 +34,7 @@ prediction_step <- function(model, predictors, batch_size) {
 }
 
 training_step <- function(model, x, y, x_val, y_val, batch_size) {
-  epochs <- 2000 # This is a fixed parameter during all experiments
+  epochs <- 2000 # This is a constant parameter during all experiments
   x <- as.matrix(x)
   y <- as.matrix(y[colnames(x)])
   x_val <- as.matrix(x_val)

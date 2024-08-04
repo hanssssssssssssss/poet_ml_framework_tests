@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   }
 
   // Constants
-  const int gpu_measure_interval = 1000;
+  const int gpu_measure_interval = 100;
   const float validation_data_percentage = .05;
   const std::string rfile_path = RFILES_DIR;
   const std::string rdata_path = RDATA_DIR;
@@ -59,10 +59,6 @@ int main(int argc, char *argv[]) {
   EMA_REGION_DECLARE(load_data);
   EMA_REGION_DECLARE(setup);
   EMA_REGION_DECLARE(process_data);
-  //Filter *nvml_filter = EMA_filter_exclude_plugin("NVML");
-  //EMA_REGION_DEFINE_WITH_FILTER(&load_data, "load_data", nvml_filter);
-  //EMA_REGION_DEFINE_WITH_FILTER(&setup, "setup", nvml_filter);
-  //EMA_REGION_DEFINE_WITH_FILTER(&training, "training", nvml_filter);
 
   EMA_REGION_DEFINE(&load_data, "load_data");
   EMA_REGION_DEFINE(&setup, "setup");
@@ -70,9 +66,18 @@ int main(int argc, char *argv[]) {
 
   RInside R(argc, argv);
 
+  if (!USE_GPU) {
+    R.parseEval("print(\"Run Keras without GPU\")");
+    R.parseEval("Sys.setenv(CUDA_VISIBLE_DEVICES = \"\")");
+  }
   // Load R util functions
   R.parseEval("source(\"" + rfile_path + "/Rfunctions.R\")");
   R.parseEval("source(\"" + rfile_path + "/Rfunctions_POET.R\")");
+
+  // start periodically measuring gpu usage
+  #if USE_GPU
+    std::thread gpu_measure_thread(monitor_gpu_usage, gpu_measure_interval, std::to_string(pid));
+  #endif
 
   // Load POET data
   EMA_REGION_BEGIN(load_data);
@@ -104,10 +109,6 @@ int main(int argc, char *argv[]) {
   Field y_val = R["y_val"];
   EMA_REGION_END(load_data);
 
-  // start periodically measuring gpu usage
-  #if USE_GPU
-    std::thread gpu_measure_thread(monitor_gpu_usage, gpu_measure_interval, std::to_string(pid));
-  #endif
   // Initialize the framework
   EMA_REGION_BEGIN(setup);
   framework_setup(framework, model, R);

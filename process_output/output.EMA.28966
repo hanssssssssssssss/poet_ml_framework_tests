@@ -1,0 +1,13 @@
+thread,region_idf,file,line,function,visits,device_name,energy,time
+0,load_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,63,main,1,CPU-0.package-0,11380953,523625
+0,load_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,63,main,1,CPU-0.dram,1393493,523641
+0,load_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,63,main,1,CPU-1.package-1,9709814,523641
+0,load_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,63,main,1,CPU-1.dram,1070633,523649
+0,setup,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,64,main,1,CPU-0.package-0,496814096,22447642
+0,setup,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,64,main,1,CPU-0.dram,59849974,22447695
+0,setup,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,64,main,1,CPU-1.package-1,439733738,22447700
+0,setup,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,64,main,1,CPU-1.dram,50279931,22447744
+0,process_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,65,main,1,CPU-0.package-0,71098695,2699557
+0,process_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,65,main,1,CPU-0.dram,4947928,2699641
+0,process_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,65,main,1,CPU-1.package-1,46354800,2699644
+0,process_data,/mnt/beegfs/home/straile/poet_ml_framework_tests/src/framework_test.cpp,65,main,1,CPU-1.dram,4222953,2699684
