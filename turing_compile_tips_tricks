@@ -15,4 +15,6 @@ Sys.setenv(XLA_FLAGS = "--xla_gpu_cuda_data_dir=/mnt/beegfs/apps/cuda/12.0")
 ## For EMA NVML copy the existing libnvidia-ml and create the Symbolic Link.
 cp mnt/beegfs/apps/cuda/12.0/targets/x86_64-linux/lib/stubs/libnvidia-ml.so ~/lib_nvml/
 ln -s ~/lib_nvml/libnvidia-ml.so ~/lib_nvml/libnvidia-ml.so.1
-export LD_LIBRARY_PATH=~/lib_nvml:$LD_LIBRARY_PATH
+
+# when trying to use save model in python, set env variable WRAPT_DISABLE_EXTENSIONS=true 
+WRAPT_DISABLE_EXTENSIONS=true python test_comverter.py

@@ -14,9 +14,6 @@ extern "C" {
   #include <EMA.h>
 }
 
-// TODO: Use validation data after training
-// TODO: Generate Training Data from POET
-// TODO: Implement large model
 // TODO: Implement tflite
 // TODO: Implement tflite quantization
 

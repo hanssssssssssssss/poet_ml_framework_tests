@@ -9,6 +9,17 @@ project(framework_tests
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+# include prebuilt tensorflow
+set(TENSORFLOW_SOURCE_DIR "/mnt/beegfs/home/straile/tensorflow_src")
+
+# Enable XNNPACK and GPU support in TensorFlow Lite
+set(TFLITE_ENABLE_XNNPACK ON CACHE BOOL "Enable XNNPACK delegate for TensorFlow Lite")
+set(TFLITE_ENABLE_GPU ON CACHE BOOL "Enable GPU delegate for TensorFlow Lite")
+
+add_subdirectory(
+  "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite"
+  "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite" EXCLUDE_FROM_ALL)
+
 add_executable(framework_tests 
                 src/framework_test.cpp 
                 src/framework_test_func/keras_Rinside.cpp
@@ -59,14 +70,9 @@ else()
 endif()
 set(EMA_LIB_FILE "${EMA_INSTALL_DIR}/lib/libEMA.so")
 
-# include prebuilt tensorflow
-set(TENSORFLOW_INSTALL_DIR "/mnt/beegfs/home/straile/tflite_build") # TODO: use Tensorflow as submodule?
-set(TENSORFLOW_LIB_FILE "${TENSORFLOW_INSTALL_DIR}/libtensorflow-lite.a")
-
 # Add include directories
 target_include_directories(framework_tests PRIVATE 
                            ${EMA_INSTALL_DIR}/include
-                           ${TENSORFLOW_INSTALL_DIR}/include
                            ${CUDA_INCLUDE_DIRS}
                            ${CMAKE_BINARY_DIR})
 
@@ -77,7 +83,7 @@ target_link_libraries(framework_tests PRIVATE
                       ${CMAKE_DL_LIBS}
                       ${CUDA_LIBRARIES}
                       ${EMA_LIB_FILE}
-                      ${TENSORFLOW_LIB_FILE})
+                      tensorflow-lite)
 
 link_directories(${EMA_INSTALL_DIR}/lib)
 
@@ -90,3 +96,5 @@ set_target_properties(framework_tests PROPERTIES
 install(TARGETS framework_tests DESTINATION bin)
 install(FILES ${EMA_LIB_FILE} DESTINATION lib)
 install(FILES ${RRuntime_LIBRARIES} DESTINATION lib)
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tensorflow-lite" DESTINATION lib)
+install(DIRECTORY "${TENSORFLOW_SOURCE_DIR}/tensorflow/lite" DESTINATION include/tensorflow/lite FILES_MATCHING PATTERN "*.h")
